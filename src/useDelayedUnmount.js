@@ -5,7 +5,18 @@ export const DelayUnmountStage = {
     EXITING: 'EXITING',
 };
 
-export const useDelayedUnmount = (duration = 1000, { initial = true } = {}) => {
+/**
+ * Adds a time delay when trying to unmount a component
+ * @param {number} duration - delay time in ms before the component truly unmounts. Default: 1000
+ * @param {boolean} initVis - sets the initial visibility state (visible in the UI). Default: true
+ * @returns {[boolean, function, string]} [showing, setShowing, stage]
+ * - showing: visibility of the component
+ * - setShowing: updates the visibility of the component.
+ *   When set to false, the delay will be triggered before `showing` is actually changed to false
+ * - stage: value of either `DelayUnmountStage.ENTERING` or `DelayUnmountStage.EXITING`. This is useful
+ *   when trying to animate the component based on entering / exiting stage
+ */
+export const useDelayedUnmount = (duration = 1000, initVis = true) => {
     const getRenderingStage = (state) => {
         if (state) {
             return DelayUnmountStage.ENTERING;
@@ -13,8 +24,8 @@ export const useDelayedUnmount = (duration = 1000, { initial = true } = {}) => {
             return DelayUnmountStage.EXITING;
         }
     };
-    const [showing, setShowing] = useState(initial);
-    const [stage, setStage] = useState(getRenderingStage(initial));
+    const [showing, setShowing] = useState(initVis);
+    const [stage, setStage] = useState(getRenderingStage(initVis));
     const [unmounting, setUnmounting] = useState(false);
 
     useEffect(() => {
